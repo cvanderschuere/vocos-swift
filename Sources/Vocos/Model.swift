@@ -180,7 +180,7 @@ class ConvNeXtBlock: Module {
         self.gamma = layerScaleInitValue * MLXArray.ones([dim])
     }
     
-    func callAsFunction(_ x: MLXArray, condEmbeddingID: MLXArray? = nil) -> MLXArray {
+    func callAsFunction(_ x: MLXArray) -> MLXArray {
         let residual = x
         var x = dwconv(x)
         x = norm(x)
