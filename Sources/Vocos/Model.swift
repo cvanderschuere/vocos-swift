@@ -169,6 +169,11 @@ public extension Vocos {
         for (key, value) in modelWeights {
             weights[key] = value
         }
+
+        // Remove a couple unused weights
+        weights.removeValue(forKey: "feature_extractor.mel_spec.spectrogram.window")
+        weights.removeValue(forKey: "head.istft.window")
+
         let parameters = ModuleParameters.unflattened(weights)
         try vocos.update(parameters: parameters, verify: [VerifyUpdate.all])
         
