@@ -4,6 +4,7 @@ import MLX
 import MLXFFT
 import MLXNN
 import MLXRandom
+import Yams
 
 // ConvNeXT blocks
 
@@ -146,7 +147,7 @@ public class Vocos: Module {
 
 public extension Vocos {
     static func fromPretrained(repoId: String) async throws -> Vocos {
-        let modelDirectoryURL = try await Hub.snapshot(from: repoId, matching: ["*.safetensors", "*.json"])
+        let modelDirectoryURL = try await Hub.snapshot(from: repoId, matching: ["*.safetensors", "*.yaml"])
         return try fromPretrained(modelDirectoryURL: modelDirectoryURL)
     }
     
@@ -154,9 +155,11 @@ public extension Vocos {
         let modelURL = modelDirectoryURL.appendingPathComponent("model.safetensors")
         var modelWeights = try loadArrays(url: modelURL)
         
-        let configURL = modelDirectoryURL.appendingPathComponent("config.json")
-        let config = try JSONSerialization.jsonObject(with: Data(contentsOf: configURL)) as? [String: Any]
-        guard let config else {
+        let configURL = modelDirectoryURL.appendingPathComponent("config.yaml")
+
+        // Load from YAML
+        let config = try? YAMLDecoder().decode([String: Any].self, from: Data(contentsOf: configURL))
+        guard let config = config else {
             throw VocosError.unableToLoadModel
         }
         
