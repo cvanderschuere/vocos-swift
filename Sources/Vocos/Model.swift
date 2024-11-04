@@ -170,12 +170,24 @@ public extension Vocos {
             weights[key] = value
         }
 
+        ///
+        // Somewhat copied from the Python mlx version
+        ///
+
         // Remove a couple unused weights
         weights.removeValue(forKey: "feature_extractor.mel_spec.spectrogram.window")
+        weights.removeValue(forKey: "feature_extractor.mel_spec.mel_scale.fb")
         weights.removeValue(forKey: "head.istft.window")
 
+        // transpose weights as needed
+        weights["backbone.embed.weight"] = weights["backbone.embed.weight"]!.movedAxis(source: 1, destination: 2)
+
+        for key in weights.keys.filter { $0.hasSuffix("dwconv.weight") } {
+                weights[key] = weights[key]!.movedAxis(source: 1, destination: 2)
+        }
+        
         let parameters = ModuleParameters.unflattened(weights)
-        try vocos.update(parameters: parameters, verify: [VerifyUpdate.all])
+        try vocos.update(parameters: parameters, verify: [VerifyUpdate.none])
         
         return vocos
     }
