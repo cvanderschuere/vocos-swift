@@ -158,7 +158,7 @@ public extension Vocos {
         let configURL = modelDirectoryURL.appendingPathComponent("config.yaml")
 
         // Load from YAML
-        let config = try? YAMLDecoder().decode([String: Any].self, from: Data(contentsOf: configURL))
+        let config = try Yams.load(yaml: String(contentsOf: configURL)) as? [String: Any]
         guard let config = config else {
             throw VocosError.unableToLoadModel
         }
@@ -170,7 +170,7 @@ public extension Vocos {
             weights[key] = value
         }
         let parameters = ModuleParameters.unflattened(weights)
-        try vocos.update(parameters: parameters, verify: [.all])
+        try vocos.update(parameters: parameters, verify: [VerifyUpdate.all])
         
         return vocos
     }
