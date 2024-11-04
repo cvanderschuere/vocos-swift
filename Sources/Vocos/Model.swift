@@ -185,7 +185,7 @@ public extension Vocos {
                 sampleRate: sampleRate,
                 nFFT: nFFT,
                 hopLength: hopLength,
-                nMels: nMels,
+                nMels: nMels
             )
         }
         

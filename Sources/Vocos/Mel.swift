@@ -1,5 +1,8 @@
 import Foundation
 import MLX
+import MLXFFT
+import MLXNN
+import MLXRandom
 
 class MelSpectrogramFeatures: Module {
     let sampleRate: Int
@@ -12,17 +15,22 @@ class MelSpectrogramFeatures: Module {
         sampleRate: Int = 24000,
         nFFT: Int = 1024,
         hopLength: Int = 256,
-        nMels: Int = 100,
+        nMels: Int = 100
     ) {
         self.sampleRate = sampleRate
         self.nFFT = nFFT
         self.hopLength = hopLength
         self.nMels = nMels
-        self.filtersT = melFilters(
+        self.filtersT = MelSpectrogramFeatures.melFilters(
             sampleRate: sampleRate,
             nFft: nFFT,
             nMels: nMels
         ).T
+    }
+
+    enum MelScale {
+        case htk
+        case slaney
     }
 
     static private func melFilters(
@@ -100,7 +108,7 @@ class MelSpectrogramFeatures: Module {
 
     
     func callAsFunction(x: MLXArray) -> MLXArray {
-        logMelSpectrogram(audio: x, nMels: nMels, nFFT: nFFT, hopLength: hopLength, filterbank: filterbank)
+        logMelSpectrogram(audio: x, nMels: nMels, nFFT: nFFT, hopLength: hopLength)
     }
 
     func stft(x: MLXArray, window: MLXArray, nperseg: Int, noverlap: Int? = nil, nfft: Int? = nil) -> MLXArray {
